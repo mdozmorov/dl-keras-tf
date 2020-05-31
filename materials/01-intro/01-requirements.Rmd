@@ -6,6 +6,41 @@ output: github_document
 This notebook will help you install all the required packages and data sets used
 throughout this workshop.
 
+# Python virtual environment
+
+Although we work in R, Python is necessary for some operations. It is highly advised to use Pytnon >3.6. Virtual environment helps to isolate installation packages from your system, in case something goes wrong. Read [A quick-and-dirty guide on how to install packages for Python](https://snarky.ca/a-quick-and-dirty-guide-on-how-to-install-packages-for-python/) and [Lauching a Jupyter notebook from within a virtual environment]() for more information. 
+
+Assuming you have Python3 installed, create your virtual environment.
+
+```{sh eval=FALSE}
+cd project_folder
+python3.7 -m venv tensorflow # tensorflow is the name of the vitrual environment, done once
+source tensorflow/bin/activate # Activate virtual environment
+python -m pip install --upgrade pip # Upgrade pip installer
+# Examples of commands installing deep learning-related packages
+# python -m pip install ipykernel
+# ipython kernel install --user --name=tensorflow
+# pip3 install --upgrade --force-reinstall tensorflow-gpu
+# python -m pip install tensorflow-gpu # ==1.7.0
+# python -m pip install --upgrade --force-reinstall scipy
+# python -m pip install --upgrade Pillow
+# python -m pip install pandas cupy cudf
+python -m pip install kaggle
+# Install Jupyter Lab
+# python -m pip install jupyterlab
+# jupyter lab # Start Jupyter Lab
+deactivate # to quit tensorflow
+```
+
+```{r}
+# Set up R to work with you virtual environment
+dir.venv <- "/Users/mdozmorov/Documents/Work/Teaching/BIOS691_deep_learning_R/WIP/tensorflow"
+# reticulate library sometimes needed to explicitly tell to use your virtual environment
+# library(reticulate)
+# use_virtualenv(dir.venv, required = TRUE)
+```
+
+
 # Packages
 
 Although this training focuses on the __keras__ package, we will use several
@@ -85,7 +120,7 @@ you will need to following these steps:
 
 1.  Create a Kaggle account
 2.  Install the [Kaggle API](https://github.com/Kaggle/kaggle-api) with…
-      - Run `pip install kaggle` in the terminal or
+      - Run `pip install kaggle` in the terminal (use virtual environment) or
       - Run `system("pip install kaggle")` in the RStudio console
 3.  Go to your Kaggle Account settings and select “Create New API
     Token”. This will download a JSON file with your access token.
@@ -104,6 +139,7 @@ Now you should be able to execute the following code to download the
 data. This will download all the data but only place a fraction of the
 data in train, validation, and test folders.
 
+On a Mac, some steps have to be done in command line.
 
 ```{r}
 dogs_cats <- file.path(data_directory, "dogs-vs-cats")
@@ -115,7 +151,8 @@ if (!dir.exists(dogs_cats)) {
   dir.create(all_images)
 
   # download & extract images
-  system("kaggle competitions download -c dogs-vs-cats")
+  # use `kaggle` installed in your virtual environment
+  system(paste0(file.path(dir.venv, "bin", "kaggle"), " competitions download -c dogs-vs-cats"))
   fs::file_move("dogs-vs-cats.zip", dogs_cats)
   
   for (zip_file in c("train.zip", "test1.zip")) {
@@ -188,7 +225,8 @@ download and the Kaggle API to download this data.
 natural_images <- file.path(data_directory, "natural_images")
 
 if (!dir.exists(natural_images)) {
-  system("kaggle datasets download -d prasunroy/natural-images")
+  # use `kaggle` installed in your virtual environment
+  system(paste0(file.path(dir.venv, "bin", "kaggle"), " datasets download -d prasunroy/natural-images"))
   fs::file_move("natural-images.zip", data_directory)
   unzip(file.path(data_directory, "natural-images.zip"), exdir = data_directory)
   
@@ -312,7 +350,7 @@ amazon_data <- file.path(data_directory, "amazon-food")
 if (!dir.exists(amazon_data)) {
   dir.create(amazon_data)
   url <- "https://snap.stanford.edu/data/finefoods.txt.gz"
-  download.file(url, destfile = "finefoods.txt.gz")
+  download.file(url, destfile = "finefoods.txt.gz") # Use wget in case of an error
   R.utils::gunzip("finefoods.txt.gz")
   fs::file_move(file.path("finefoods.txt"), new_path = amazon_data)
 }

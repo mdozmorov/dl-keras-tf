@@ -1,6 +1,8 @@
 ---
 title: "The 'Hello World' of Deep Learning"
 output: html_notebook
+editor_options: 
+  chunk_output_type: console
 ---
 
 ```{r setup, include=FALSE}
@@ -220,6 +222,7 @@ network %>% compile(
 ## 3. Execute training loop [ℹ️](http://bit.ly/dl-01#79)
 
 ```{r train}
+# Each epoch is ~ 4sec, total time <2 min
 history <- network %>% 
   fit(train_images, train_labels, 
       batch_size = 128, epochs = 20, 
